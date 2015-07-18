@@ -4,6 +4,7 @@ import QtQuick.Controls 1.2
 import QtQuick.Controls.Styles 1.1
 import QtQuick.Dialogs 1.2
 import "."
+import "./QChart.js" as Charts
 import "./editors/formatters/formatters.js" as Formatters
 
 Rectangle {
@@ -14,7 +15,7 @@ Rectangle {
 
     TabView {
         id: tabs
-        objectName: "rdm_qml_tabs" 
+        objectName: "rdm_qml_tabs"
         anchors.fill: parent
         anchors.margins: 2
         currentIndex: 0
@@ -29,6 +30,118 @@ Rectangle {
             console.log(index)
 
             viewModel.setCurrentTab(index)
+        }
+
+        Tab {
+            id: jsTab
+            title: "js console"
+
+            property var outModel: ListModel {
+                id: outputModel
+            }
+
+            function jsCall(exp) {
+                //var data = Util.call(exp);
+                // insert the result at the beginning of the list
+                outputModel.insert(0, {'result': eval(exp)})
+            }
+
+            ColumnLayout {
+                anchors.fill: parent
+                anchors.margins: 9
+
+
+
+                QChart {
+                  id: chart_line;
+                  width: 300;
+                  height: 300;
+                  chartAnimated: true;
+                  chartAnimationEasing: Easing.InOutElastic;
+                  chartAnimationDuration: 2000;
+                  chartType: Charts.ChartType.LINE;
+
+                  Component.onCompleted: {
+                     chartData = {
+                            labels: ["January","February","March","April","May","June","July"],
+                          datasets: [{
+                                     fillColor: "rgba(220,220,220,0.5)",
+                                   strokeColor: "rgba(220,220,220,1)",
+                                    pointColor: "rgba(220,220,220,1)",
+                              pointStrokeColor: "#ffffff",
+                                          data: [65,59,90,81,56,55,40]
+                          }, {
+                                     fillColor: "rgba(151,187,205,0.5)",
+                                   strokeColor: "rgba(151,187,205,1)",
+                                    pointColor: "rgba(151,187,205,1)",
+                              pointStrokeColor: "#ffffff",
+                                          data: [28,48,40,19,96,27,100]
+                          }]
+                      }
+                  }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    TextField {
+                        id: input
+                        Layout.fillWidth: true
+                        focus: true
+                        onAccepted: {
+                            // call our evaluation function on root
+                            jsTab.jsCall(input.text)
+                        }
+                    }
+                    Button {
+                        text: qsTr("Send")
+                        onClicked: {
+                            // call our evaluation function on root
+                            jsTab.jsCall(input.text)
+                            console.log(appVersion)
+                        }
+                    }
+                }
+                Item {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    Rectangle {
+                        anchors.fill: parent
+                        color: '#333'
+                        border.color: Qt.darker(color)
+                        opacity: 0.2
+                        radius: 2
+                    }
+
+                    ScrollView {
+                        id: scrollView
+                        anchors.fill: parent
+                        anchors.margins: 9
+                        ListView {
+                            id: resultView
+                            model: jsTab.outModel
+                            delegate: ColumnLayout {
+                                width: ListView.view.width
+                                Label {
+                                    Layout.fillWidth: true
+                                    color: 'green'
+                                    text: "> " + model.expression
+                                }
+                                Label {
+                                    Layout.fillWidth: true
+                                    color: 'blue'
+                                    text: "" + model.result
+                                }
+                                Rectangle {
+                                    height: 1
+                                    Layout.fillWidth: true
+                                    color: '#333'
+                                    opacity: 0.2
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         WelcomeTab {
@@ -120,8 +233,8 @@ Rectangle {
     }
 
     AddKeyDialog {
-       id: addNewKeyDialog
-       objectName: "rdm_qml_new_key_dialog"
+        id: addNewKeyDialog
+        objectName: "rdm_qml_new_key_dialog"
     }
 
     Connections {
@@ -137,7 +250,7 @@ Rectangle {
             var welcomeTab = tabs.getTab(0)
 
             if (welcomeTab && welcomeTab.not_mapped)
-               tabs.removeTab(0)
+                tabs.removeTab(0)
         }
 
         onNewKeyDialog: {

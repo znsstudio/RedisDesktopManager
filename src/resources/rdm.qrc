@@ -45,5 +45,7 @@
         <file>qml/editors/editor.js</file>
         <file>qml/parts/Pagination.qml</file>
         <file>qml/AddKeyDialog.qml</file>
+        <file>qml/QChart.js</file>
+        <file>qml/QChart.qml</file>
     </qresource>
 </RCC>
