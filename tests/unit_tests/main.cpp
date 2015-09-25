@@ -19,6 +19,8 @@ INITIALIZE_EASYLOGGINGPP
 #include "testcases/console/test_console.h"
 #include "testcases/value-editor/test_valueview.h"
 #include "testcases/value-editor/test_compression.h"
+#include "testcases/value-editor/test_valueview.h"
+#include "testcases/value-editor/test_viewmodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -46,6 +48,7 @@ int main(int argc, char *argv[])
             // value-editor module
             + QTest::qExec(new TestCompression, argc, argv)
             + QTest::qExec(new TestValueView, argc, argv)
+            + QTest::qExec(new TestViewModel, argc, argv)
             ;
 
     if (allTestsResult == 0)
